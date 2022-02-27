@@ -1,6 +1,9 @@
+import Compiler from './Compiler.js'
 
 function webpack(options){
     const mergeOptions = _mergeOptions(options)
+    const compiler = new Compiler(mergeOptions)
+    return compiler
 }
 
 function _mergeOptions(options){
@@ -12,7 +15,7 @@ function _mergeOptions(options){
         }
         return option
     }, {})
-    console.log(shellOptions)
+    
     return {
         ...options,
         ...shellOptions
