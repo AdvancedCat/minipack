@@ -3,6 +3,7 @@ import Compiler from './Compiler.js'
 function webpack(options){
     const mergeOptions = _mergeOptions(options)
     const compiler = new Compiler(mergeOptions)
+    _loadPlugin(options.plugins, compiler)
     return compiler
 }
 
@@ -19,6 +20,14 @@ function _mergeOptions(options){
     return {
         ...options,
         ...shellOptions
+    }
+}
+
+function _loadPlugin(plugins, compiler){
+    if(plugins && Array.isArray(plugins)){
+        plugins.forEach(plugin=>{
+            plugin.apply(compiler)
+        })
     }
 }
 

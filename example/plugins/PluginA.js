@@ -1,4 +1,10 @@
 
 export default class PluginA {
-    apply(){}
+    apply(compiler){
+        // 注册钩子
+        // 监听run
+        compiler.hooks.run.tap('PluginA', ()=>{
+            console.log('PluginA')
+        })
+    }
 }

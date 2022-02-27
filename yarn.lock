@@ -4282,6 +4282,11 @@ symbol-tree@^3.2.4:
   resolved "http://registry.m.jd.com/symbol-tree/download/symbol-tree-3.2.4.tgz#430637d248ba77e078883951fb9aa0eed7c63fa2"
   integrity sha1-QwY30ki6d+B4iDlR+5qg7tfGP6I=
 
+tapable@^2.2.1:
+  version "2.2.1"
+  resolved "http://registry.m.jd.com/tapable/download/tapable-2.2.1.tgz#1967a73ef4060a82f12ab96af86d52fdb76eeca0"
+  integrity sha1-GWenPvQGCoLxKrlq+G1S/bdu7KA=
+
 temp-dir@^2.0.0:
   version "2.0.0"
   resolved "http://registry.m.jd.com/temp-dir/download/temp-dir-2.0.0.tgz#bde92b05bdfeb1516e804c9c00ad45177f31321e"
