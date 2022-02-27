@@ -1,4 +1,5 @@
 import path from 'path'
+import PluginA from './plugins/PluginA.js'
 
 const url = new URL(import.meta.url)
 const __dirname = url.pathname
