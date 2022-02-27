@@ -1,10 +1,7 @@
-import path from 'path'
-import PluginA from './plugins/PluginA.js'
+const path = require('path')
+const PluginA = require('./plugins/PluginA.js')
 
-const url = new URL(import.meta.url)
-const __dirname = url.pathname
-
-export default {
+module.exports= {
     mode: 'development',
     entry: {
         main: path.resolve(__dirname, './src/entry1.js'),

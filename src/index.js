@@ -1,5 +1,5 @@
-import webpack from './webpack.js'
-import config from '../example/webpack.config.js'
+const webpack = require('./webpack.js')
+const config = require( '../example/webpack.config.js')
 
 const compiler = webpack(config)
 

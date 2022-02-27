@@ -1,4 +1,4 @@
-import Compiler from './Compiler.js'
+const Compiler = require('./Compiler.js')
 
 function webpack(options){
     const mergeOptions = _mergeOptions(options)
@@ -31,4 +31,4 @@ function _loadPlugin(plugins, compiler){
     }
 }
 
-export default webpack
+module.exports = webpack

@@ -2,7 +2,6 @@
   "name": "minipack",
   "version": "0.0.0",
   "description": "A mini webpack for studying.",
-  "type": "module",
   "exports": "./dist/index.js",
   "scripts": {
     "build": "npm run lint && npm test && rimraf dist && rollup -c && node scripts/bundle-size.js",

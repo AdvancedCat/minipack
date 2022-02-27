@@ -1,5 +1,5 @@
 
-export default class PluginA {
+module.exports = class PluginA {
     apply(compiler){
         // 注册钩子
         // 监听run
