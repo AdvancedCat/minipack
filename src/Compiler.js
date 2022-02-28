@@ -5,7 +5,7 @@ const parser = require('@babel/parser')
 const traverse = require('@babel/traverse').default
 const generator = require('@babel/generator').default
 const t = require('@babel/types')
-const {toUnixPath, tryExtensions} = require('./shared/index.js')
+const {toUnixPath, tryExtensions, getSourceCode} = require('./shared/index.js')
 
 module.exports = class Compiler{
 
@@ -40,6 +40,8 @@ module.exports = class Compiler{
         const entry = this.getEntry()
         // 编译入口文件
         this.buildEntryModule(entry)
+        // 输出打包产物
+        this.exportFile(callback)
     }
 
     /**
@@ -182,5 +184,38 @@ module.exports = class Compiler{
         })
 
         return module
+    }
+
+    exportFile(callback){
+        const output = this.options.output
+        // 根据chunks生成assets内容
+        this.chunks.forEach(chunk=>{
+            const parseFileName = output.filename.replace('[name]', chunk.name)
+            this.assets[parseFileName] = getSourceCode(chunk)
+        })
+
+        this.hooks.emit.call()
+
+        if(!fs.existsSync(output.path)){
+            fs.mkdirSync(output.path)
+        }
+        
+        this.files = Object.keys(this.assets)
+        this.files.forEach(file=>{
+            const filePath = path.join(output.path, file)
+            fs.writeFileSync(filePath, this.assets[file])
+        })
+
+        this.hooks.done.call()
+
+        callback(null, {
+            toJson: ()=>({
+                entries: this.entries,
+                modules: this.modules,
+                chunks: this.chunks,
+                files: this.files,
+                assets: this.assets
+            })
+        })
     }
 }
