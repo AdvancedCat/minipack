@@ -42,6 +42,11 @@ module.exports = class Compiler{
         this.buildEntryModule(entry)
         // 输出打包产物
         this.exportFile(callback)
+
+        console.log('entries:', this.entries)
+        console.log('modules:', this.modules)
+        console.log('chunks:', this.chunks)
+        console.log('files:', this.files)
     }
 
     /**
@@ -80,9 +85,6 @@ module.exports = class Compiler{
             // 根据当前入口文件和模块的相互依赖关系，组装成为一个个包含当前入口所有依赖模块的chunk
             this.buildUpChunk(name, entryObj)
         })
-        console.log('entries:', this.entries)
-        console.log('modules:', this.modules)
-        console.log('chunks:', this.chunks)
     }
 
     buildModule(moduleName, modulePath){
