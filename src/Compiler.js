@@ -75,9 +75,12 @@ module.exports = class Compiler{
             const entryPath = entry[name]
             const entryObj = this.buildModule(name, entryPath)
             this.entries.add(entryObj)
+            // 根据当前入口文件和模块的相互依赖关系，组装成为一个个包含当前入口所有依赖模块的chunk
+            this.buildUpChunk(name, entryObj)
         })
         console.log('entries:', this.entries)
         console.log('modules:', this.modules)
+        console.log('chunks:', this.chunks)
     }
 
     buildModule(moduleName, modulePath){
@@ -89,6 +92,15 @@ module.exports = class Compiler{
         // 3. 进行模块编译，得到module对象
         const module = this.handleWebpackCompiler(moduleName, modulePath)
         return module
+    }
+
+    buildUpChunk(entryName, entryObj){
+        const chunk = {
+            name: entryName,
+            entryModule: entryObj,
+            modules: Array.from(this.modules).filter(m=>m.name.includes(entryName))
+        }
+        this.chunks.add(chunk)
     }
 
     handleLoader(modulePath){
