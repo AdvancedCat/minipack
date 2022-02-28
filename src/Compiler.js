@@ -76,6 +76,8 @@ module.exports = class Compiler{
             const entryObj = this.buildModule(name, entryPath)
             this.entries.add(entryObj)
         })
+        console.log('entries:', this.entries)
+        console.log('modules:', this.modules)
     }
 
     buildModule(moduleName, modulePath){
@@ -86,7 +88,6 @@ module.exports = class Compiler{
         this.handleLoader(modulePath)
         // 3. 进行模块编译，得到module对象
         const module = this.handleWebpackCompiler(moduleName, modulePath)
-        console.log('module', module)
         return module
     }
 
@@ -115,7 +116,7 @@ module.exports = class Compiler{
         // 以模块的路径名为模块id
         const moduleId = './' + path.posix.relative(this.rootPath, modulePath)
         const module = {
-            id: moduleId,
+            id: moduleId,  // 相对于根路径
             name: [moduleName],  // 该模块所属的入口文件
             dependencies: new Set()
         }
@@ -132,7 +133,7 @@ module.exports = class Compiler{
                     const requirePath = node.arguments[0].value
                     const moduleDirName = path.posix.dirname(modulePath)
                     const absolutePath = tryExtensions(
-                        path.posix.join(moduleDirName, requirePath),
+                        path.posix.join(moduleDirName, requirePath), // 引入模块的相对路径
                         this.options.resolve.extensions,
                         moduleName,
                         moduleDirName
@@ -140,8 +141,20 @@ module.exports = class Compiler{
                     const moduleId = './' + path.posix.relative(this.rootPath, absolutePath)
                     node.callee = t.identifier('__webpack_require__')
                     node.arguments = [t.stringLiteral(moduleId)]
-                    // 为当前模块添加依赖
-                    module.dependencies.add(moduleId)
+
+                    // 校验依赖项是否已经存在
+                    const alreadyModules = Array.from(this.modules).map(i=>i.id)
+                    if(alreadyModules.includes(moduleId)){
+                        // 已经存在的话 虽然不进行添加进入模块编译 但是仍要更新这个模块依赖的入口
+                        this.modules.forEach(m=>{
+                            if(m.id === moduleId){
+                                m.name.push(moduleName)
+                            }
+                        })
+                    }else{
+                        // 加入到当前模块的依赖项数组
+                        module.dependencies.add(moduleId)
+                    }
                 }
             }
         })
@@ -149,6 +162,13 @@ module.exports = class Compiler{
         // 根据新的ast生成代码
         const {code} = generator(ast)
         module._source = code
+
+        // 进一步的处理模块的依赖项
+        module.dependencies.forEach(dep => {
+            const depModule = this.buildModule(moduleName, dep)
+            this.modules.add(depModule) // 将依赖项添加到modules中
+        })
+
         return module
     }
 }
