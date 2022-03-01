@@ -7,6 +7,11 @@ function webpack(options){
     return compiler
 }
 
+/**
+ * 将webpack.config.js中的配置参数与命令行中的参数合并
+ * @param {*} options 
+ * @returns 
+ */
 function _mergeOptions(options){
     const shellOptions = process.argv.slice(2).reduce((option, argv)=>{
         const [key, value] = argv.split('=')
@@ -23,6 +28,12 @@ function _mergeOptions(options){
     }
 }
 
+/**
+ * 加载plugins
+ * TODO: 插件也可以用纯函数形式提供 (compiler)=>{}
+ * @param {*} plugins 
+ * @param {*} compiler 
+ */
 function _loadPlugin(plugins, compiler){
     if(plugins && Array.isArray(plugins)){
         plugins.forEach(plugin=>{
