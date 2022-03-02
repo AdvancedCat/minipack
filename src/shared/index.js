@@ -4,6 +4,10 @@ function toUnixPath(path){
     return path.replace(/\\/g, '/')
 }
 
+function isFromNodeModules(requirePath){
+    return (/\.\.?\//).test(requirePath)
+  }
+
 function tryExtensions(modulePath, extensions, originModulePath, moduleContext){
     let exts = ['', ...extensions]
     for(let extension of exts){
@@ -12,46 +16,47 @@ function tryExtensions(modulePath, extensions, originModulePath, moduleContext){
             return fullName
         }
     }
-    throw new Error(`No module found. Can't resolve ${originModulePath} in ${moduleContext}`)
+    console.log(modulePath, extensions, originModulePath, moduleContext)
+    throw new Error(`No module found. Can't resolve ${modulePath} in ${moduleContext}`)
 }
 
 function getSourceCode(chunk){
-    const {name, entryModule, modules} = chunk
-    return `
-(()=>{
-var __webpack_modules__ = {
-    ${modules.map(m=>`'${m.id}':(module)=>{${m._source}}`).join(',')}
-}
+    const {entryModule, modules} = chunk
+    const finalModules = [entryModule, ...modules]
 
-var __webpack_module_cache__ = {}
+    return `
+((modules)=>{
+
+var installedModules = {}
 function __webpack_require__(moduleId){
-    var cacheModule = __webpack_module_cache__[moduleId]
+    var cacheModule = installedModules[moduleId]
     if(cacheModule !== void 0){
         return cacheModule.exports
     }
     var module = (
-        __webpack_module_cache__[moduleId] = {
+        installedModules[moduleId] = {
             exports: {}
         }
     )
 
-    __webpack_modules__[moduleId](module, module.exports, __webpack_require__)
+    modules[moduleId].call(module.exports, module, module.exports, __webpack_require__)
 
     return module.exports
 }
 
-var __webpack_exports__ = {}
+return __webpack_require__( '${entryModule.id}' )
 
-;(()=>{
-    ${entryModule._source}
-})()
-
-})();
+})(
+    {
+        ${finalModules.map(m=>`'${m.id}':(module, exports, __webpack_require__)=>{${m._source}}`).join(',')}
+    }
+);
 `
 }
 
 module.exports = {
     toUnixPath,
     tryExtensions,
-    getSourceCode
+    getSourceCode,
+    isFromNodeModules
 }

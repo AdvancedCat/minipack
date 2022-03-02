@@ -9,6 +9,7 @@ const {
   toUnixPath,
   tryExtensions,
   getSourceCode,
+  isFromNodeModules
 } = require('./shared/index.js')
 
 module.exports = class Compiler {
@@ -172,12 +173,14 @@ module.exports = class Compiler {
         const node = nodePath.node
         if (node.callee.name === 'require') {
           const requirePath = node.arguments[0].value
+          // TODO: 校验模块是否来自于 node_modules
+          // const isNM = isFromNodeModules(requirePath)
           const moduleDirName = path.posix.dirname(modulePath)
           const absolutePath = tryExtensions(
             path.posix.join(moduleDirName, requirePath), // 引入模块的相对路径
             this.options.resolve.extensions,
             moduleName,
-            moduleDirName
+            moduleDirName,
           )
           const moduleId =
             './' + path.posix.relative(this.rootPath, absolutePath)
