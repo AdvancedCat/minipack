@@ -1,7 +1,4 @@
-# pkg-template-js
-The boilerplate for building a javascript package.
+# minipack
 
-```bash
-$ pkg-cli init <my-project>
-// choose js option
-```
+The minimal implementation of Webpack.          
+The purpose of this project is to help myself to understand webpack how to work.          
